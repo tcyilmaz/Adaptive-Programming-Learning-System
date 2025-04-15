@@ -1,42 +1,38 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* frontend/src/index.css OR frontend/src/App.css */
+
+body {
+  margin: 0; /* Remove default body margin */
+  font-family: sans-serif; /* Or your preferred font */
+  background-color: #0b1a33; /* Your dark blue background - Adjust hex code if needed */
+  color: white; /* Default text color */
+  display: flex; /* Use flexbox for centering */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  min-height: 100vh; /* Ensure body takes full viewport height */
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Basic styling for the nav links from App.jsx to make them less intrusive */
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: absolute; /* Take nav out of flow */
+  top: 10px; /* Position it at the top */
+  left: 10px;
+  display: flex;
+  gap: 15px; /* Space between links */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+nav a {
+  color: #aaa; /* Lighter color for nav links */
+  text-decoration: none;
 }
 
-.card {
-  padding: 2em;
+nav a:hover {
+  color: white;
 }
 
-.read-the-docs {
-  color: #888;
+/* Add padding to the main content area if needed */
+#root > div { /* Target the main div inside App.jsx if you have one */
+  padding-top: 50px; /* Add space below the absolute positioned nav */
 }

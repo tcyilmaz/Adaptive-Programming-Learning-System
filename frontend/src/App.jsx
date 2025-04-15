@@ -1,71 +1,65 @@
 // frontend/src/App.jsx
-import { useState, useEffect } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+import { Routes, Route, Link, Navigate } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import DashboardPage from './pages/DashboardPage'; // Create this simple page
 import './App.css';
 
+// Helper to check if user is authenticated
+const isAuthenticated = () => {
+    return !!localStorage.getItem('authToken'); // Check if token exists
+};
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+    if (!isAuthenticated()) {
+        // Redirect them to the /login page, but save the current location they were
+        // trying to go to. This is useful if they are redirected from a deep link.
+        return <Navigate to="/login" replace />;
+    }
+    return children;
+};
+
+
 function App() {
-  const [backendStatus, setBackendStatus] = useState('Checking...');
-  const [backendMessage, setBackendMessage] = useState('');
-  const [error, setError] = useState(null);
+    // Basic layout, add Navbar later
+    return (
+        <div>
+            <nav> {/* Very basic navigation */}
+                <ul>
+                    <li><Link to="/login">Login</Link></li>
+                    <li><Link to="/register">Register</Link></li>
+                    {isAuthenticated() && <li><Link to="/dashboard">Dashboard</Link></li>}
+                     {/* Add Logout button later */}
+                </ul>
+            </nav>
+            <hr />
+            <Routes>
+                {/* Public Routes */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
 
-  // Use useEffect to fetch data when the component mounts
-  useEffect(() => {
-    // Define the function to fetch data
-    const fetchHealth = async () => {
-      try {
-        // Make sure the URL matches your backend port
-        const response = await fetch('http://localhost:3001/api/health');
+                 {/* Redirect root path */}
+                 <Route path="/" element={<Navigate to={isAuthenticated() ? "/dashboard" : "/login"} replace />} />
 
-        if (!response.ok) {
-          // If response is not 2xx, throw an error
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
 
-        const data = await response.json();
-        setBackendStatus(data.status);
-        setBackendMessage(data.message);
-        setError(null); // Clear any previous errors
+                {/* Protected Routes */}
+                <Route
+                    path="/dashboard"
+                    element={
+                        <ProtectedRoute>
+                            <DashboardPage />
+                        </ProtectedRoute>
+                    }
+                />
 
-      } catch (err) {
-        console.error("Failed to fetch backend status:", err);
-        setError(`Failed to connect to backend: ${err.message}`);
-        setBackendStatus('Error');
-        setBackendMessage('');
-      }
-    };
+                {/* Add other routes here */}
 
-    // Call the fetch function
-    fetchHealth();
-
-    // Optional: return a cleanup function if needed (not necessary for this simple fetch)
-    // return () => { /* cleanup code */ };
-  }, []); // Empty dependency array means this runs once when component mounts
-
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <h2>Adaptive Programming Learning System</h2>
-      <div className="card">
-        {/* Display backend status */}
-        <h3>Backend Status: {backendStatus}</h3>
-        {backendMessage && <p>{backendMessage}</p>}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        {/* Rest of your default Vite content can go here or be removed */}
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  );
+                 {/* Catch-all or 404 Not Found Route */}
+                <Route path="*" element={<div><h2>404 Not Found</h2><Link to="/">Go Home</Link></div>} />
+            </Routes>
+        </div>
+    );
 }
 
 export default App;
