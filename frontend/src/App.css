@@ -32,3 +32,11 @@ nav a:hover {
 #root > div {
   padding-top: 50px;
 }
+
+.main-content {
+  padding-top: 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}

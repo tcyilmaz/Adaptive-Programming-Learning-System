@@ -1,0 +1,107 @@
+.homepage-container {
+    padding: 2rem;
+    text-align: center;
+    color: #eee;
+}
+
+.homepage-header {
+    margin-bottom: 3rem;
+}
+
+.homepage-header h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.homepage-header p {
+    font-size: 1.2rem;
+    color: #ccc;
+}
+
+.homepage-cta {
+    margin-bottom: 3rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: 8px;
+}
+
+.homepage-cta p {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    margin: 0 0.5rem;
+}
+
+.cta-button.register {
+    background-color: #4CAF50;
+    color: white;
+    border: 1px solid #4CAF50;
+}
+
+.cta-button.register:hover {
+    background-color: #45a049;
+    transform: scale(1.03);
+}
+
+.cta-button.login {
+    background-color: transparent;
+    color: #4da6ff;
+    border: 1px solid #4da6ff;
+}
+.cta-button.login:hover {
+    background-color: rgba(77, 166, 255, 0.1);
+    transform: scale(1.03);
+}
+
+.homepage-cta > a.cta-button {
+    background-color: #4da6ff;
+    color: white;
+    border: 1px solid #4da6ff;
+}
+.homepage-cta > a.cta-button:hover {
+    background-color: #3c8ae0;
+    transform: scale(1.03);
+}
+
+
+.homepage-features {
+    margin-bottom: 3rem;
+}
+
+.homepage-features h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    border-bottom: 2px solid #4da6ff;
+    display: inline-block;
+    padding-bottom: 0.3rem;
+}
+
+.homepage-features ul {
+    list-style: none;
+    padding: 0;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.homepage-features li {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.homepage-features li::before {
+    position: absolute;
+    left: 0;
+    color: #4CAF50;
+}
