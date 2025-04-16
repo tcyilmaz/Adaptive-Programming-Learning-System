@@ -1,8 +1,7 @@
-// frontend/src/pages/LoginPage.jsx
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // Import Link
+import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../services/api';
-import './LoginPage.css'; // --- IMPORT THE CSS FILE ---
+import './LoginPage.css';
 
 function LoginPage() {
     const [email, setEmail] = useState('');
@@ -29,15 +28,12 @@ function LoginPage() {
     };
 
     return (
-        // --- ADD A CONTAINER DIV ---
         <div className="login-container">
-            <h2>Log In</h2> {/* Keep the title */}
+            <h2>Log In</h2>
 
-            {/* --- Display error message --- */}
             {error && <p className="error-message">{error}</p>}
 
             <form onSubmit={handleSubmit}>
-                {/* --- Group Label and Input --- */}
                 <div className="form-group">
                     <label htmlFor="email">E-mail</label>
                     <input
@@ -46,11 +42,11 @@ function LoginPage() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        placeholder="Enter your email" // Add placeholder text
+                        placeholder="Enter your email"
                     />
                 </div>
 
-                 {/* --- Group Label and Input --- */}
+
                 <div className="form-group">
                     <label htmlFor="password">Password</label>
                     <input
@@ -59,7 +55,7 @@ function LoginPage() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        placeholder="Enter your password" // Add placeholder text
+                        placeholder="Enter your password"
                     />
                 </div>
 
@@ -68,7 +64,6 @@ function LoginPage() {
                 </button>
             </form>
 
-             {/* --- Link to Register Page --- */}
             <p className="switch-auth-link">
                 Don't have an account? <Link to="/register">Register</Link>
             </p>

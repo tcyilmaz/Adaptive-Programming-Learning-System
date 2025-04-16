@@ -1,6 +1,5 @@
-// backend/config/db.js
 const { Pool } = require('pg');
-require('dotenv').config(); // Load environment variables from .env
+require('dotenv').config();
 
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -8,10 +7,6 @@ const pool = new Pool({
   database: process.env.DB_DATABASE,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
-  // Optional: Add SSL configuration for production environments
-  // ssl: {
-  //   rejectUnauthorized: false // Adjust as needed for your hosting provider
-  // }
 });
 
 pool.on('connect', () => {
@@ -20,10 +15,10 @@ pool.on('connect', () => {
 
 pool.on('error', (err) => {
   console.error('Unexpected error on idle client', err);
-  process.exit(-1); // Exit the process if the pool encounters a critical error
+  process.exit(-1);
 });
 
 module.exports = {
   query: (text, params) => pool.query(text, params),
-  pool, // Export the pool itself if needed for transactions etc.
+  pool,
 };

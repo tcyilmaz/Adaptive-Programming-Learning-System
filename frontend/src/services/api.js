@@ -15,21 +15,21 @@ const apiClient = axios.create({
 // --- Authentication Endpoints ---
 
 export const register = (userData) => {
-    // userData should be { username, email, password }
+    // userData = { username, email, password }
     return apiClient.post('/auth/register', userData);
 };
 
 export const login = (credentials) => {
-    // credentials should be { email, password }
+    // credentials = { email, password }
     return apiClient.post('/auth/login', credentials);
 };
 
-// --- Add other API functions later (questions, profile, etc.) ---
+//other API functions
 
-// --- Interceptor to add JWT token to requests (Important!) ---
+//Interceptor to add JWT token requests
 apiClient.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('authToken'); // Or sessionStorage
+        const token = localStorage.getItem('authToken');
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
@@ -41,4 +41,3 @@ apiClient.interceptors.request.use(
 );
 
 export default apiClient;
-// might need to add VITE_API_BASE_URL=http://localhost:3001/api to a .env file in your frontend directory for Vite to pick it up

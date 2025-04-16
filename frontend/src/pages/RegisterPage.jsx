@@ -1,7 +1,7 @@
-// frontend/src/pages/RegisterPage.jsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import { register } from '../services/api';
+import './RegisterPage.css';
 
 function RegisterPage() {
     const [username, setUsername] = useState('');
@@ -18,8 +18,8 @@ function RegisterPage() {
         setSuccess('');
         setLoading(true);
 
-        // Basic frontend validation (add more as needed)
-        if (password.length < 6) { // Example minimum length
+
+        if (password.length < 8) {
              setError('Password must be at least 6 characters long.');
              setLoading(false);
              return;
@@ -28,8 +28,7 @@ function RegisterPage() {
         try {
             await register({ username, email, password });
             setSuccess('Registration successful! You can now log in.');
-            // Optionally redirect to login after a delay or provide a link
-             setTimeout(() => navigate('/login'), 2000); // Redirect after 2s
+             setTimeout(() => navigate('/login'), 2000);
 
         } catch (err) {
             console.error("Registration failed:", err.response?.data || err.message);
@@ -40,22 +39,25 @@ function RegisterPage() {
     };
 
     return (
-        <div>
-            <h2>Registeration</h2> {/* Match mockup */}
+        <div className="register-container">
+            <h2>Registeration</h2>
+
             {error && <p style={{ color: 'red' }}>{error}</p>}
             {success && <p style={{ color: 'green' }}>{success}</p>}
+
             <form onSubmit={handleSubmit}>
-                 <div>
-                    <label htmlFor="username">Name</label> {/* Match mockup */}
+                 <div className="form-group">
+                    <label htmlFor="username">Name</label>
                     <input
                         type="text"
                         id="username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
+                        placeholder="Enter your username"
                     />
                 </div>
-                <div>
+                <div className="form-group">
                     <label htmlFor="email">E-mail</label>
                     <input
                         type="email"
@@ -63,9 +65,10 @@ function RegisterPage() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        placeholder="Enter your email"
                     />
                 </div>
-                <div>
+                <div className="form-group">
                     <label htmlFor="password">Password</label>
                     <input
                         type="password"
@@ -73,13 +76,16 @@ function RegisterPage() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        placeholder="Enter your Password"
                     />
                 </div>
                 <button type="submit" disabled={loading}>
-                    {loading ? 'Registering...' : 'CREATE AN ACCOUNT'} {/* Match mockup */}
+                    {loading ? 'Registering...' : 'CREATE AN ACCOUNT'}
                 </button>
-                 {/* Add link to Login page */}
             </form>
+            <p className="switch-auth-link">
+                Already have an account? <Link to="/login">Login</Link>
+            </p>
         </div>
     );
 }
