@@ -20,7 +20,7 @@ function RegisterPage() {
 
 
         if (password.length < 8) {
-             setError('Password must be at least 6 characters long.');
+             setError('Password must be at least 8 characters long.');
              setLoading(false);
              return;
         }

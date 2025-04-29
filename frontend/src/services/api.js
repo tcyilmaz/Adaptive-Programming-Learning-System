@@ -1,10 +1,9 @@
-// frontend/src/services/api.js
 import axios from 'axios';
 
-// Define the base URL for your backend API
+//base backend URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
 
-// Create an Axios instance
+//Axios instance
 const apiClient = axios.create({
     baseURL: API_BASE_URL,
     headers: {
@@ -12,7 +11,7 @@ const apiClient = axios.create({
     },
 });
 
-// --- Authentication Endpoints ---
+
 
 export const register = (userData) => {
     // userData = { username, email, password }
@@ -24,9 +23,8 @@ export const login = (credentials) => {
     return apiClient.post('/auth/login', credentials);
 };
 
-//other API functions
 
-//Interceptor to add JWT token requests
+
 apiClient.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('authToken');

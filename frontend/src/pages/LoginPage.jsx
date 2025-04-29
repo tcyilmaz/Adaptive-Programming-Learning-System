@@ -21,7 +21,7 @@ function LoginPage() {
             navigate('/dashboard');
         } catch (err) {
             console.error("Login failed:", err.response?.data || err.message);
-            setError(err.response?.data?.message || 'Login failed. Please check credentials.');
+            setError(err.response?.data?.message || 'Login failed. Please check email/password.');
         } finally {
             setLoading(false);
         }

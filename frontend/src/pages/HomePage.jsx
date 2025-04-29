@@ -8,7 +8,11 @@ function HomePage() {
     return (
         <div className="homepage-container">
             <header className="homepage-header">
-                <h1>Welcome Back</h1>
+                {isAuthenticated ? (
+                    <h1>Welcome Back</h1>
+                ) : (
+                    <h1>Welcome</h1>
+                    )}
             </header>
 
             <section className="homepage-cta">
