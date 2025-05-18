@@ -5,6 +5,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import HomePage from './pages/HomePage';
+import ProfilePage from './pages/ProfilePage';
+import LearningPage from './pages/LearningPage';
 import './App.css';
 
 const isAuthenticated = () => !!localStorage.getItem('authToken');
@@ -30,6 +32,8 @@ function App() {
                     <Route path="/register" element={<RegisterPage />} />
                     <Route element={<ProtectedRoute />}>
                         <Route path="/dashboard" element={<DashboardPage />} />
+                        <Route path="/profile" element={<ProfilePage />} />
+                        <Route path="/learn/:courseId" element={<LearningPage />} />
                     </Route>
                     <Route path="*" element={<div><h2>404 Not Found</h2><Link to="/">Go Home</Link></div>} />
                 </Routes>

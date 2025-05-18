@@ -5,7 +5,7 @@ const getAllCourses = async (req, res) => {
     try {
         const result = await db.query('SELECT course_id, name, description, language FROM courses ORDER BY name');
         res.status(200).json(result.rows);
-    } catch (error){
+    } catch (error) {
         console.error('Error fetching courses:', error);
         res.status(500).json({ message: 'Server error fetching courses' });
     }
