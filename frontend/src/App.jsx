@@ -4,8 +4,6 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import HomePage from './pages/HomePage';
-import ProfilePage from './pages/ProfilePage';
-import LearningPage from './pages/LearningPage';
 import './App.css';
 
 const isAuthenticated = () => {
@@ -36,8 +34,7 @@ function App() {
                 <Routes>
                     {/* ... routes ... */}
                     <Route element={<ProtectedRoute />}>
-                         <Route path="/dashboard" element={<DashboardPage />} />
-                         {/* ... other protected routes ... */}
+                        <Route path="/dashboard" element={<DashboardPage />} />
                     </Route>
                     {/* ... routes ... */}
                 </Routes>
