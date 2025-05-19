@@ -1,6 +1,6 @@
 // frontend/src/pages/ProfilePage.jsx
 import React, { useState, useEffect } from 'react';
-import apiClient from '../services/api';
+import apiClient from '../services/api.js';
 import { Link } from 'react-router-dom'; // If you need links
 import './ProfilePage.css'; // We'll create this for styling
 

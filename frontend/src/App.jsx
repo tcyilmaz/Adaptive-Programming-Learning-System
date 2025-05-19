@@ -1,5 +1,4 @@
-// frontend/src/App.jsx
-import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, Navigate, useLocation, Outlet } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -9,33 +8,38 @@ import ProfilePage from './pages/ProfilePage';
 import LearningPage from './pages/LearningPage';
 import './App.css';
 
-const isAuthenticated = () => !!localStorage.getItem('authToken');
+const isAuthenticated = () => {
+    console.log("App.jsx: isAuthenticated called. Token:", localStorage.getItem('authToken'));
+    return !!localStorage.getItem('authToken');
+};
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = () => { // Removed 'children' prop as it's not used this way
+    console.log("App.jsx: ProtectedRoute rendering/checking");
     let location = useLocation();
 
     if (!isAuthenticated()) {
+        console.log("App.jsx: ProtectedRoute - User NOT authenticated, redirecting to /login from", location.pathname);
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
-    return children;
+
+    console.log("App.jsx: ProtectedRoute - User IS authenticated, rendering Outlet for path:", location.pathname);
+    return <Outlet />; // <<< --- THIS IS THE CRITICAL CHANGE ---
+                       // Outlet is where the matched child route (e.g., DashboardPage) will be rendered.
 };
 
-
 function App() {
+    console.log("App.jsx: App component rendering/rerendering"); // Log App component execution
     return (
         <div className="app-container">
             <Navbar />
             <main className="main-content">
                 <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
+                    {/* ... routes ... */}
                     <Route element={<ProtectedRoute />}>
-                        <Route path="/dashboard" element={<DashboardPage />} />
-                        <Route path="/profile" element={<ProfilePage />} />
-                        <Route path="/learn/:courseId" element={<LearningPage />} />
+                         <Route path="/dashboard" element={<DashboardPage />} />
+                         {/* ... other protected routes ... */}
                     </Route>
-                    <Route path="*" element={<div><h2>404 Not Found</h2><Link to="/">Go Home</Link></div>} />
+                    {/* ... routes ... */}
                 </Routes>
             </main>
         </div>
