@@ -22,8 +22,9 @@ export const login = (credentials) => {
     // credentials = { email, password }
     return apiClient.post('/auth/login', credentials);
 };
-
-
+export const getMyProfile = () => {
+    return apiClient.get('/auth/me');
+};
 
 apiClient.interceptors.request.use(
     (config) => {

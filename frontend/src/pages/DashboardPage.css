@@ -1,0 +1,75 @@
+/* frontend/src/pages/DashboardPage.css */
+.dashboard-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: rgba(23, 37, 53, 0.8); /* Hafif transparan koyu arka plan */
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  color: #e0e0e0; /* Açık gri metin */
+}
+
+.dashboard-container h1 {
+  color: #ffffff; /* Beyaz başlık */
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-container p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-actions {
+  display: flex;
+  flex-direction: column; /* Butonları alt alta sırala (mobil için iyi) */
+  gap: 1rem; /* Butonlar arası boşluk */
+  margin-bottom: 2rem;
+  align-items: center; /* Butonları ortala */
+}
+
+.dashboard-button, .logout-button {
+  display: inline-block;
+  padding: 0.8rem 1.5rem;
+  background-color: #007bff; /* Ana eylem rengi (mavi) */
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  min-width: 200px; /* Butonlara minimum genişlik */
+  box-sizing: border-box;
+}
+
+.dashboard-button:hover, .logout-button:hover {
+  background-color: #0056b3; /* Hoverda biraz daha koyu mavi */
+  transform: translateY(-2px); /* Hafif yukarı kalkma efekti */
+}
+
+.logout-button {
+  background-color: #dc3545; /* Çıkış için kırmızı */
+}
+
+.logout-button:hover {
+  background-color: #c82333; /* Hoverda biraz daha koyu kırmızı */
+}
+
+.error-message {
+  color: #ff4d4d;
+  background-color: rgba(255, 77, 77, 0.1);
+  border: 1px solid #ff4d4d;
+  padding: 0.8rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+/* Tablet ve üzeri için butonları yan yana alabiliriz */
+@media (min-width: 768px) {
+  .dashboard-actions {
+    flex-direction: row; /* Butonları yan yana sırala */
+    justify-content: center; /* Butonları ortala */
+  }
+}

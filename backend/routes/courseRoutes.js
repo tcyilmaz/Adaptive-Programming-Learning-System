@@ -1,25 +1,12 @@
+// backend/routes/courseRoutes.js
 const express = require('express');
 const router = express.Router();
-const {
-    getAllCourses,
-    getNextQuestion
-} = require('../controllers/courseController.js'); // Make sure .js extension if your controller file has it
-const { protect } = require('../middleware/authMiddleware.js'); // Make sure .js extension
+const courseController = require('../controllers/courseController.js'); // courseController'ın bir obje ve içinde fonksiyonlar olduğunu varsayıyoruz
 
-// @route   GET api/courses
-// @desc    Get all available courses
-// @access  Protected (User must be logged in)
-router.get('/', protect, getAllCourses);
+// TÜM KURS LİSTESİ
+router.get('/', courseController.getAllCourses); // DOĞRU! Fonksiyonun referansını veriyorsunuz.
 
-// @route   GET api/courses/:courseId/next-question
-// @desc    Get the next question for a specific course for the logged-in user
-// @access  Protected
-router.get('/:courseId/next-question', protect, getNextQuestion);
-
-// Add more course-related routes here later if needed, e.g.:
-// GET api/courses/:courseId - Get details for a single course (if you implement a Course Detail Page)
-// POST api/courses - Create a new course (Admin only)
-// PUT api/courses/:courseId - Update a course (Admin only)
-// DELETE api/courses/:courseId - Delete a course (Admin only)
+// TEK BİR KURS DETAYI
+router.get('/:courseId', courseController.getCourseById); // DOĞRU!
 
 module.exports = router;

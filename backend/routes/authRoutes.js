@@ -1,9 +1,25 @@
-const express = require('express');
-const { registerUser, loginUser } = require('../controllers/authController');
+const express = require("express");
+const {
+  registerUser,
+  loginUser,
+  getMyProfileController,
+} = require("../controllers/authController");
+const { protect } = require("../middleware/authMiddleware"); // Bu satırı ekle
 const router = express.Router();
 
-router.post('/register', registerUser);
+// @route   POST api/auth/register
+// @desc    Register a new user
+// @access  Public
+router.post("/register", registerUser);
 
-router.post('/login', loginUser);
+// @route   POST api/auth/login
+// @desc    Authenticate user & get token
+// @access  Public
+router.post("/login", loginUser);
+
+// @route   GET api/auth/me
+// @desc    Get current user's profile
+// @access  Private
+router.get("/me", protect, getMyProfileController); // BU SATIRI EKLE
 
 module.exports = router;
