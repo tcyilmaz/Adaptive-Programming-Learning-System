@@ -4,22 +4,57 @@ const db = require("../config/db");
 const getAllCourses = async (req, res) => {
   try {
     const result = await db.query(
-      "SELECT course_id, name, description, language FROM courses ORDER BY name"
+      "SELECT course_id, name, description, language FROM courses ORDER BY name ASC"
     );
-    res.status(200).json(result.rows);
+    res.status(200).json({
+      success: true,
+      count: result.rows.length,
+      data: result.rows,
+    });
   } catch (error) {
     console.error("Error fetching courses:", error);
-    res.status(500).json({ message: "Server error fetching courses" });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error fetching courses" });
   }
 };
 const getCourseById = async (req, res) => {
   try {
-    const courseId = req.params.courseId;
-    // ... veritabanı sorgusu ...
-    res.json({ message: `Kurs detayları: ${courseId}` });
+    const { courseId } = req.params; // URL'den courseId'yi al
+
+    // Veritabanından ilgili kursu çek
+    const result = await db.query(
+      "SELECT course_id, name, description, language FROM courses WHERE course_id = $1",
+      [courseId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Course not found with ID: ${courseId}`,
+      });
+    }
+
+    // Başarılı yanıt
+    res.status(200).json({
+      success: true,
+      data: result.rows[0],
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Sunucu Hatası");
+    console.error(
+      `Error getting course by ID (${req.params.courseId}):`,
+      error
+    );
+    if (error.message.includes("invalid input syntax for type uuid")) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Course ID format provided.",
+      });
+    }
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching course details",
+    });
   }
 };
 
@@ -102,8 +137,69 @@ const getNextQuestion = async (req, res) => {
     res.status(500).json({ message: "Server error fetching question" });
   }
 };
+const getQuestionsByCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+
+    // Kursun var olup olmadığını kontrol et (opsiyonel ama iyi bir pratik)
+    const courseExists = await db.query(
+      "SELECT 1 FROM courses WHERE course_id = $1",
+      [courseId]
+    );
+    if (courseExists.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Course not found with ID: ${courseId}`,
+      });
+    }
+
+    // O kursa ait tüm soruları çek
+    // Şimdilik tüm soru alanlarını alalım, ileride sadece gerekli olanları seçebiliriz
+    const result = await db.query(
+      `SELECT question_id, course_id, question_type, question_text, options, difficulty_level
+             FROM questions
+             WHERE course_id = $1
+             ORDER BY created_at ASC`, // Veya başka bir sıralama kriteri (örn: question_order)
+      [courseId]
+    );
+
+    // correct_answer'ı API'den DÖNDÜRMEYİN! Cevap kontrolü ayrı bir endpoint'te yapılacak.
+    // Eğer frontend'de spaced repetition için bazı meta veriler gerekiyorsa (soru_id gibi), onlar eklenebilir.
+
+    if (result.rows.length === 0) {
+      return res.status(200).json({
+        // 404 yerine 200 ve boş data/mesaj dönebiliriz
+        success: true,
+        message: "This course currently has no questions.",
+        data: [],
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      count: result.rows.length,
+      data: result.rows,
+    });
+  } catch (error) {
+    console.error(
+      `Error getting questions for course (${req.params.courseId}):`,
+      error
+    );
+    if (error.message.includes("invalid input syntax for type uuid")) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Course ID format provided.",
+      });
+    }
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching questions",
+    });
+  }
+};
 
 module.exports = {
   getAllCourses,
   getCourseById,
+  getQuestionsByCourse,
 };

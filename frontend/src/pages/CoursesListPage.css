@@ -1,0 +1,74 @@
+/* frontend/src/pages/CoursesListPage.css */
+.courses-list-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: rgba(23, 37, 53, 0.8);
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  color: #e0e0e0;
+}
+
+.courses-list-container h1 {
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #444;
+  padding-bottom: 0.5rem;
+}
+
+.courses-list {
+  list-style: none;
+  padding: 0;
+  display: grid; /* Kartları grid yapısında göstermek için */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Duyarlı grid */
+  gap: 1.5rem; /* Kartlar arası boşluk */
+}
+
+.course-item {
+  background-color: rgba(30, 45, 60, 0.9);
+  border: 1px solid #3a4b5f;
+  border-radius: 6px;
+  padding: 1.5rem;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.course-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.course-item a {
+  text-decoration: none;
+  color: inherit; /* Ana metin rengini alsın */
+  display: block; /* Tüm alanı tıklanabilir yapsın */
+}
+
+.course-item h2 {
+  color: #61dafb; /* React mavisi gibi bir renk veya kendi temanıza uygun */
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.course-item .course-language {
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-bottom: 0.75rem;
+  font-style: italic;
+}
+
+.course-item .course-description {
+  font-size: 1rem;
+  color: #ccc;
+  line-height: 1.5;
+}
+
+.error-message {
+  color: #ff4d4d;
+  background-color: rgba(255, 77, 77, 0.1);
+  border: 1px solid #ff4d4d;
+  padding: 0.8rem;
+  border-radius: 4px;
+  text-align: center;
+}

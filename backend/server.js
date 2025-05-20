@@ -41,9 +41,9 @@ app.listen(PORT, () => {
   // Test DB connection on start (optional)
   db.query("SELECT NOW()", (err, res) => {
     if (err) {
-      console.error("❌ Database connection error:", err.stack);
+      console.error("Database connection error:", err.stack);
     } else {
-      console.log("📦 Database responded at:", res.rows[0].now);
+      console.log("Database responded:", res.rows[0].now);
     }
   });
 });

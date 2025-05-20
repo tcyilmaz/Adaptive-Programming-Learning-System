@@ -1,0 +1,106 @@
+/* frontend/src/pages/QuestionPage.css */
+.question-page-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: rgba(23, 37, 53, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  color: #e0e0e0;
+}
+
+.back-to-course-detail {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  color: #61dafb;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.back-to-course-detail:hover {
+  text-decoration: underline;
+}
+
+.question-page-container h1 {
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.question-content {
+  background-color: rgba(30, 45, 60, 0.95);
+  padding: 1.5rem 2rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+}
+
+.question-text {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  white-space: pre-wrap; /* Soru metnindeki boşlukları ve satır sonlarını koru */
+}
+
+.mcq-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.mcq-option {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  background-color: rgba(44, 62, 80, 0.7);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.mcq-option:hover {
+  background-color: rgba(52, 73, 94, 0.9);
+}
+
+.mcq-option input[type="radio"] {
+  margin-right: 0.8rem;
+  transform: scale(1.2); /* Radyo butonunu biraz büyüt */
+}
+
+.fill-blank-input input[type="text"] {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #2c3e50;
+  color: white;
+  font-size: 1rem;
+  box-sizing: border-box;
+  margin-bottom: 1.5rem;
+}
+
+.submit-answer-button {
+  display: block;
+  width: 100%;
+  padding: 0.9rem;
+  background-color: #28a745; /* Yeşil */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.submit-answer-button:hover {
+  background-color: #218838;
+}
+
+.error-message {
+  /* ... (CoursesListPage.css'ten kopyalanabilir) ... */
+}
+
+.feedback-message {
+  /* ... (Cevap geri bildirimi için stil) ... */
+}
