@@ -1,12 +1,11 @@
-/* frontend/src/pages/ProfilePage.css */
 .profile-container {
   max-width: 700px;
   margin: 2rem auto;
   padding: 2rem;
-  background-color: rgba(30, 45, 60, 0.85); /* Biraz daha açık bir koyu ton */
+  background-color: rgba(30, 45, 60, 0.85);
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
-  color: #d0d0d0; /* Genel metin rengi */
+  color: #d0d0d0; 
 }
 
 .profile-container h1 {
@@ -23,9 +22,9 @@
 
 .profile-item {
   display: flex;
-  justify-content: space-between; /* Etiket ve değeri ayır */
+  justify-content: space-between;
   padding: 0.8rem 0.5rem;
-  border-bottom: 1px solid #3a4b5f; /* Daha ince ayırıcı çizgi */
+  border-bottom: 1px solid #3a4b5f;
   font-size: 1rem;
 }
 
@@ -35,19 +34,19 @@
 
 .profile-label {
   font-weight: bold;
-  color: #a0b0c0; /* Etiketler için biraz daha açık renk */
+  color: #a0b0c0;
   margin-right: 1rem;
 }
 
 .profile-value {
   color: #e0e0e0;
-  word-break: break-all; /* Uzun e-postalar için satır kırma */
+  word-break: break-all;
 }
 
 .edit-profile-button {
   display: block;
   width: auto;
-  margin: 1rem auto 2rem auto; /* Ortalamak için */
+  margin: 1rem auto 2rem auto;
   padding: 0.7rem 1.5rem;
   background-color: #007bff;
   color: white;
@@ -62,7 +61,6 @@
 }
 
 .profile-edit-form {
-  /* Düzenleme formu için stiller buraya gelecek */
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -83,7 +81,7 @@
 
 .profile-edit-form button {
   padding: 0.8rem;
-  background-color: #28a745; /* Kaydet butonu için yeşil */
+  background-color: #28a745;
   color: white;
   border: none;
   border-radius: 5px;

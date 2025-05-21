@@ -1,29 +1,24 @@
-// frontend/src/pages/DashboardPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import './DashboardPage.css'; // Dashboard için CSS dosyası oluşturalım
 import { getMyProfile } from '../services/api';
+import './DashboardPage.css';
 
 function DashboardPage() {
     const navigate = useNavigate();
-    const [user, setUser] = useState(null); // Kullanıcı bilgilerini tutacak state
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                // Token'ı localStorage'dan alıyoruz (apiClient interceptor'ı zaten kullanacak)
                 const token = localStorage.getItem('authToken');
-                if (!token) {
-                    navigate('/login'); // Token yoksa login'e yönlendir
+                if (!token) {//if no token, take to Login page
+                    navigate('/login'); 
                     return;
                 }
 
-                // Kullanıcının kendi bilgilerini çekmek için /api/users/me (veya /api/auth/me)
-                // Bu endpoint'i backend'de oluşturduğunuzu varsayıyorum.
-                // Adı /api/auth/profile veya benzeri de olabilir.
-                const response = await getMyProfile(); // Güncellenmiş çağrı
+                const response = await getMyProfile();
                 setUser(response.data.user || response.data);
                 setLoading(false);
             } catch (err) {
@@ -31,9 +26,8 @@ function DashboardPage() {
                 setError('Kullanıcı bilgileri yüklenemedi.');
                 setLoading(false);
                 if (err.response && (err.response.status === 401 || err.response.status === 403)) {
-                    // Token geçersiz veya süresi dolmuşsa logout yap ve login'e yönlendir
                     localStorage.removeItem('authToken');
-                    localStorage.removeItem('user'); // Eski kullanıcı verisini de temizle
+                    localStorage.removeItem('user');
                     navigate('/login');
                 }
             }
@@ -44,7 +38,7 @@ function DashboardPage() {
 
     const handleLogout = () => {
         localStorage.removeItem('authToken');
-        localStorage.removeItem('user'); // Genel user bilgisini de temizleyebiliriz
+        localStorage.removeItem('user');
         navigate('/login');
     };
 
@@ -73,7 +67,6 @@ function DashboardPage() {
                 <Link to="/profile" className="dashboard-button">
                     My Profile
                 </Link>
-                {/* İleride buraya kullanıcının son çalıştığı kursa devam et butonu eklenebilir */}
             </div>
 
             <button onClick={handleLogout} className="logout-button">

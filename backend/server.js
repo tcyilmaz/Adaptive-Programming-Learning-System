@@ -1,44 +1,35 @@
-// backend/server.js
 const express = require("express");
 const cors = require("cors");
-require("dotenv").config(); // Make sure dotenv is configured early
-const db = require("./config/db"); // Import db to initiate connection pool
+require("dotenv").config();
+const db = require("./config/db");
 const courseRoutes = require('./routes/courseRoutes.js');
-
-// Import routes
 const authRoutes = require("./routes/authRoutes");
-// const questionRoutes = require('./routes/questionRoutes'); // Future
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 
-// --- Middleware ---
-app.use(cors()); // Consider more specific CORS options for production
+// middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// --- API Routes ---
+
 app.get("/api/health", (req, res) => {
-  res.json({ status: "UP", message: "Backend server is running!" });
+  res.json({ status: "UP", message: "Backend server is running" });
 });
 
 app.use("/api/courses", courseRoutes);
-// Use Auth Routes
-app.use("/api/auth", authRoutes); // All routes in authRoutes will be prefixed with /api/auth
 
-// Use Question Routes (Future)
-// app.use('/api/questions', questionRoutes);
+app.use("/api/auth", authRoutes);
 
-// --- Basic Error Handling (Optional but Recommended) ---
 app.use((err, req, res, next) => {
   console.error("Unhandled Error:", err.stack);
-  res.status(500).send("Something broke!");
+  res.status(500).send("Error!");
 });
 
-// --- Start the Server ---
+
 app.listen(PORT, () => {
-  console.log(`🚀 Backend server listening on http://localhost:${PORT}`);
-  // Test DB connection on start (optional)
+  console.log(`Backend server listening on http://localhost:${PORT}`);
   db.query("SELECT NOW()", (err, res) => {
     if (err) {
       console.error("Database connection error:", err.stack);

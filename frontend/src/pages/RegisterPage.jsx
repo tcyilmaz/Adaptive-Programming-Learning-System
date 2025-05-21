@@ -18,12 +18,23 @@ function RegisterPage() {
         setSuccess('');
         setLoading(true);
 
+        const hasUppercase = /[A-Z]/.test(password);
+        const hasLowercase = /[a-z]/.test(password);
+        const hasSpecialChar = /[!@#$%^&*()_+\-={};':"|,.<>?]+/.test(password);
 
         if (password.length < 8) {
              setError('Password must be at least 8 characters long.');
              setLoading(false);
              return;
         }
+
+        if (!hasUppercase || !hasLowercase || !hasSpecialChar) {
+            setError('Password must contain at least one uppercase letter, one lowercase letter, and one special character.');
+            setLoading(false);
+            return;
+        }
+
+
 
         try {
             await register({ username, email, password });
@@ -42,8 +53,6 @@ function RegisterPage() {
         <div className="register-container">
             <h2>Registeration</h2>
 
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {success && <p style={{ color: 'green' }}>{success}</p>}
 
             <form onSubmit={handleSubmit}>
                  <div className="form-group">
@@ -83,6 +92,9 @@ function RegisterPage() {
                     {loading ? 'Registering...' : 'CREATE AN ACCOUNT'}
                 </button>
             </form>
+            
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {success && <p style={{ color: 'green' }}>{success}</p>}
             <p className="switch-auth-link">
                 Already have an account? <Link to="/login">Login</Link>
             </p>

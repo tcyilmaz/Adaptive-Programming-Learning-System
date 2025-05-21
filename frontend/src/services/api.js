@@ -10,7 +10,6 @@ const apiClient = axios.create({
   },
 });
 
-// Interceptor'ı apiClient tanımlandıktan hemen sonra eklemek iyi bir pratiktir
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("authToken");
@@ -24,7 +23,6 @@ apiClient.interceptors.request.use(
   }
 );
 
-// --- Authentication ---
 export const register = (userData) => {
   return apiClient.post("/auth/register", userData);
 };
@@ -37,20 +35,16 @@ export const getMyProfile = () => {
   return apiClient.get("/auth/me");
 };
 
-// --- Courses ---
 export const getAllCourses = () => {
-  // <<<--- BU FONKSİYONU EKLE
   return apiClient.get("/courses");
 };
 
 export const getCourseById = (courseId) => {
-  // <<<--- BU FONKSİYONU EKLE
   return apiClient.get(`/courses/${courseId}`);
 };
 
-// --- Questions ---
 export const getQuestionsByCourse = (courseId) => {
   return apiClient.get(`/courses/${courseId}/questions`);
 };
 
-export default apiClient; // apiClient'i de default olarak export etmeye devam et
+export default apiClient;

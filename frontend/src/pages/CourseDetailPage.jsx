@@ -2,17 +2,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { getCourseById } from "../services/api";
-import "./CourseDetailPage.css"; // Detay sayfası için CSS
+import "./CourseDetailPage.css";
 
 function CourseDetailPage() {
-  const { courseId } = useParams(); // URL'den courseId'yi al
+  const { courseId } = useParams();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!courseId) return; // courseId yoksa bir şey yapma
+    if (!courseId) return;
 
     const fetchCourseDetails = async () => {
       setLoading(true);
@@ -23,19 +23,19 @@ function CourseDetailPage() {
           setCourse(response.data.data);
         } else {
           setError(
-            response.data.message || `Kurs (ID: ${courseId}) bulunamadı.`
+            response.data.message || `Can not find (ID: ${courseId}).`
           );
         }
       } catch (err) {
         console.error(`Failed to fetch course ${courseId}:`, err);
-        setError(`Kurs (ID: ${courseId}) yüklenemedi. Sunucu hatası olabilir.`);
+        setError(`Can not find (ID: ${courseId}).`);
         if (
           err.response &&
           (err.response.status === 401 || err.response.status === 403)
         ) {
           navigate("/login");
         } else if (err.response && err.response.status === 404) {
-          setError(`Kurs (ID: ${courseId}) bulunamadı.`);
+          setError(`Can not find (ID: ${courseId}).`);
         }
       } finally {
         setLoading(false);
@@ -70,8 +70,6 @@ function CourseDetailPage() {
     );
   }
   const handleStartCourse = () => {
-    // Kullanıcıyı kursun soru sayfasına yönlendir
-    // State ile soru listesini de gönderebiliriz veya QuestionPage kendi fetch edebilir
     navigate(`/courses/${courseId}/play`);
   };
 
@@ -89,12 +87,10 @@ function CourseDetailPage() {
         <p>{course.description || "No Describtion."}</p>
       </div>
       <div className="course-actions">
-        {/* İleride bu butona tıklandığında sorular sayfasına yönlendireceğiz */}
         <button onClick={handleStartCourse} className="start-course-button">
           Start Course
         </button>
       </div>
-      {/* İleride kursa ait modüller/sorular burada listelenebilir */}
     </div>
   );
 }
