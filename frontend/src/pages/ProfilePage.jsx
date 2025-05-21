@@ -1,8 +1,8 @@
 // frontend/src/pages/ProfilePage.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getMyProfile } from "../services/api"; // api.js dosyamız
-import "./ProfilePage.css"; // Profil sayfası için CSS dosyası
+import { getMyProfile } from "../services/api";
+import "./ProfilePage.css";
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -10,19 +10,15 @@ function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // İleride düzenleme modu için state'ler eklenebilir
-  // const [isEditing, setIsEditing] = useState(false);
-  // const [formData, setFormData] = useState({});
 
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
       setError("");
       try {
-        const response = await getMyProfile(); // veya /users/me
+        const response = await getMyProfile();
         console.log("API Response Data:", response.data);
-        setProfile(response.data.user); // Backend'den dönen yanıta göre
-        // setFormData(response.data.user); // Düzenleme için başlangıç verisi
+        setProfile(response.data.user);
       } catch (err) {
         setError("Failed to fetch profile.");
         if (
@@ -41,9 +37,6 @@ function ProfilePage() {
     fetchProfile();
   }, [navigate]);
 
-  // İleride profil güncelleme fonksiyonu eklenecek
-  // const handleInputChange = (e) => { /* ... */ };
-  // const handleSubmit = async (e) => { /* ... */ };
 
   if (loading) {
     return (
@@ -81,6 +74,14 @@ function ProfilePage() {
           <span className="profile-label">E-mail:</span>
           <span className="profile-value">{profile.email}</span>
         </div>
+        <div className="profile-item">
+          <span className="profile-label">First Name:</span>
+          <span className="profile-value">{profile.first_name}</span>
+        </div>
+        <div className="profile-item">
+          <span className="profile-label">Last Name:</span>
+          <span className="profile-value">{profile.last_name}</span>
+        </div>
         {profile.first_name && (
           <div className="profile-item">
             <span className="profile-label">Name:</span>
@@ -99,21 +100,7 @@ function ProfilePage() {
             {new Date(profile.created_at).toLocaleDateString()}
           </span>
         </div>
-        {/* SDD'deki diğer alanları buraya ekleyebilirsiniz */}
       </div>
-
-      {/* İleride Düzenleme Butonu ve Formu
-            <button onClick={() => setIsEditing(!isEditing)} className="edit-profile-button">
-                {isEditing ? 'Vazgeç' : 'Profili Düzenle'}
-            </button>
-
-            {isEditing && (
-                <form onSubmit={handleSubmit} className="profile-edit-form">
-                    // Form inputları buraya gelecek
-                    <button type="submit">Değişiklikleri Kaydet</button>
-                </form>
-            )}
-            */}
     </div>
   );
 }

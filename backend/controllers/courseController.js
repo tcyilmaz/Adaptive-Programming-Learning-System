@@ -1,6 +1,6 @@
 const db = require("../config/db");
 
-// Fetch all courses
+
 const getAllCourses = async (req, res) => {
   try {
     const result = await db.query(
@@ -58,7 +58,6 @@ const getCourseById = async (req, res) => {
   }
 };
 
-// Fetch the next question
 const getNextQuestion = async (req, res) => {
   const { courseId } = req.params;
   const userId = req.user.id;
@@ -153,7 +152,7 @@ const getQuestionsByCourse = async (req, res) => {
     }
 
         const result = await db.query(
-      `SELECT question_id, course_id, question_type, question_text, options, difficulty_level
+      `SELECT question_id, course_id, question_type, question_text, options, difficulty
              FROM questions
              WHERE course_id = $1
              ORDER BY created_at ASC`,
@@ -190,6 +189,7 @@ const getQuestionsByCourse = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   getAllCourses,

@@ -47,4 +47,8 @@ export const getQuestionsByCourse = (courseId) => {
   return apiClient.get(`/courses/${courseId}/questions`);
 };
 
+export const submitAnswer = (questionId, answer) => {
+    return apiClient.post(`/questions/${questionId}/submit_answer`, { answer });
+};
+
 export default apiClient;
