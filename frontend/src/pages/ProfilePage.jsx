@@ -1,4 +1,3 @@
-// frontend/src/pages/ProfilePage.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMyProfile } from "../services/api";
@@ -82,18 +81,6 @@ function ProfilePage() {
           <span className="profile-label">Last Name:</span>
           <span className="profile-value">{profile.last_name}</span>
         </div>
-        {profile.first_name && (
-          <div className="profile-item">
-            <span className="profile-label">Name:</span>
-            <span className="profile-value">{profile.first_name}</span>
-          </div>
-        )}
-        {profile.last_name && (
-          <div className="profile-item">
-            <span className="profile-label">Last Name:</span>
-            <span className="profile-value">{profile.last_name}</span>
-          </div>
-        )}
         <div className="profile-item">
           <span className="profile-label">Date Account Created:</span>
           <span className="profile-value">

@@ -1,4 +1,3 @@
-// frontend/src/pages/QuestionPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getQuestionsByCourse, getCourseById, submitAnswer } from '../services/api';
@@ -11,31 +10,28 @@ function QuestionPage() {
     const [courseTitle, setCourseTitle] = useState('');
     const [questions, setQuestions] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [selectedAnswer, setSelectedAnswer] = useState(''); // MCQ için
-    const [fillBlankAnswer, setFillBlankAnswer] = useState(''); // FillBlank için
+    const [selectedAnswer, setSelectedAnswer] = useState('');
+    const [fillBlankAnswer, setFillBlankAnswer] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [feedback, setFeedback] = useState(null); // { message: string, isCorrect: boolean }
+    const [feedback, setFeedback] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Veri çekme fonksiyonu (useCallback ile sarmalandı)
+    // Veri çek
     const fetchCourseAndQuestions = useCallback(async () => {
         setLoading(true);
         setError('');
-        setQuestions([]); // Yeni kursa geçerken veya yeniden yüklerken eski soruları temizle
-        setCourseTitle(''); // Eski başlığı temizle
-        setCurrentQuestionIndex(0); // İndeksi sıfırla
-        setFeedback(null); // Eski feedback'i temizle
+        setQuestions([]);
+        setCourseTitle('');
+        setCurrentQuestionIndex(0);
+        setFeedback(null);
 
         try {
-            // Önce kurs bilgilerini çek (başlık için)
             const courseRes = await getCourseById(courseId);
             if (courseRes.data && courseRes.data.success) {
                 setCourseTitle(courseRes.data.data.name);
             } else {
-                // Kurs bilgisi alınamazsa da devam et ama bir hata logla veya kullanıcıya bildir
-                console.warn(courseRes.data.message || 'Kurs başlığı alınamadı.');
-                // setError('Kurs başlığı yüklenemedi.'); // Bu kullanıcıya gösterilecek genel hatayı tetikler
+                console.warn(courseRes.data.message || 'Course information could not be fetched.');
             }
 
             // Sonra soruları çek
@@ -44,32 +40,30 @@ function QuestionPage() {
                 if (questionsRes.data.data && questionsRes.data.data.length > 0) {
                     setQuestions(questionsRes.data.data);
                 } else {
-                    // Kursta soru yoksa, error state'ini set et ve questions'ı boş bırak
-                    setError('Bu kursta henüz soru bulunmamaktadır.');
+                    setError('No questions found for this course.');
                     setQuestions([]);
                 }
             } else {
-                throw new Error(questionsRes.data.message || 'Sorular yüklenirken bir sorun oluştu.');
+                throw new Error(questionsRes.data.message || 'Error loading the questions.');
             }
         } catch (err) {
             console.error("Failed to fetch course/questions:", err);
-            setError(err.message || 'Veriler yüklenemedi. Sunucu hatası olabilir.');
+            setError(err.message || 'Server Error.');
             if (err.response && (err.response.status === 401 || err.response.status === 403)) {
                 navigate('/login');
             }
         } finally {
             setLoading(false);
         }
-    }, [courseId, navigate]); // useCallback bağımlılıkları
+    }, [courseId, navigate]);
 
-    // Bileşen yüklendiğinde ve courseId değiştiğinde verileri çek
     useEffect(() => {
-        if (courseId) { // courseId varsa fetch yap
+        if (courseId) {
             fetchCourseAndQuestions();
         }
-    }, [fetchCourseAndQuestions, courseId]); // fetchCourseAndQuestions ve courseId'ye bağımlı
+    }, [fetchCourseAndQuestions, courseId]); 
 
-    // Mevcut soruyu al (questions dizisi boş değilse)
+    // soruyu çek
     const currentQuestion = questions.length > 0 && currentQuestionIndex < questions.length
         ? questions[currentQuestionIndex]
         : null;
@@ -80,7 +74,7 @@ function QuestionPage() {
 
         setIsSubmitting(true);
         setFeedback(null);
-        setError(''); // Cevap gönderirken genel API hatalarını temizle
+        setError('');//errorları sıfırla
 
         const answerToSubmit = currentQuestion.question_type === 'MCQ' ? selectedAnswer : fillBlankAnswer;
 
@@ -94,17 +88,15 @@ function QuestionPage() {
                     isCorrect: response.data.isCorrect,
                 });
             } else {
-                // API'den success:false ama hata mesajı geldiyse
                 setFeedback({
-                    message: response.data.message || 'Cevap gönderilirken bir sorun oluştu.',
-                    isCorrect: false // Hata durumunda yanlış kabul edelim
+                    message: response.data.message || 'Error sending answer.',
+                    isCorrect: false
                 });
             }
         } catch (err) {
             console.error("Failed to submit answer:", err);
-            // Genel bir hata mesajı göster veya feedback'i ayarla
             setFeedback({
-                message: 'Cevap gönderilemedi. Sunucu hatası olabilir.',
+                message: 'Failed to submit feedback. Please try again.',
                 isCorrect: false
             });
             if (err.response && (err.response.status === 401 || err.response.status === 403)) {
@@ -123,42 +115,30 @@ function QuestionPage() {
             setFillBlankAnswer('');
         } else {
             alert("Congrats! You finished this course.");
-            navigate(`/courses/${courseId}`); // Kurs detay sayfasına geri dön
+            navigate(`/courses/${courseId}`);
         }
     };
 
     if (loading) {
-        return <div className="question-page-container"><p>Yükleniyor...</p></div>;
+        return <div className="question-page-container"><p>Loading...</p></div>;
     }
 
-    // Önce genel API veya yükleme hatasını kontrol et
-    if (error && questions.length === 0) { // Eğer questions yüklenemediyse ve genel bir hata varsa
+    // soru yok veya genel hata
+    if (error && questions.length === 0) { 
         return (
             <div className="question-page-container">
                 <p className="error-message">{error}</p>
-                <Link to="/courses">Tüm Kurslara Dön</Link>
+                <Link to="/courses">Course Details</Link>
             </div>
         );
     }
 
-    // Sorular yüklendi ama hiç soru yoksa (veya error spesifik olarak 'soru yok' ise)
-    if (questions.length === 0) {
-        return (
-            <div className="question-page-container">
-                <h1>{courseTitle || 'Kurs'}</h1>
-                <p className="error-message">{error || 'Bu kursta henüz soru bulunmamaktadır.'}</p>
-                <Link to={`/courses/${courseId}`}>Kurs Detaylarına Geri Dön</Link>
-            </div>
-        );
-    }
 
-    // Eğer buraya kadar geldiysek ve currentQuestion hala null ise, bir sorun var demektir.
-    // Bu genellikle questions dizisi boşken veya index hatalıysa olur ama yukarıdaki kontrollerle ele alınmalı.
     if (!currentQuestion) {
         return (
             <div className="question-page-container">
-                <p>Soru yüklenirken beklenmedik bir sorun oluştu. Lütfen sayfayı yenileyin veya kurs listesine geri dönün.</p>
-                <Link to="/courses">Kurs Listesine Dön</Link>
+                <p>Please refresh the page.</p>
+                <Link to="/courses">Course Page</Link>
             </div>
         );
     }
@@ -166,14 +146,12 @@ function QuestionPage() {
     return (
         <div className="question-page-container">
                         <Link to={`/courses/${courseId}`} className="back-to-course-detail">
-                {'<'} {courseTitle || 'Kurs Detayları'}
+                {'<'} {courseTitle || 'Course Details'}
             </Link>
             <h1>Question {currentQuestionIndex + 1} / {questions.length}</h1>
-            {/* Cevap gönderimi sırasında oluşan spesifik API hataları için: */}
             {error && feedback === null && <p className="error-message">{error}</p>}
 
             <div className="question-content">
-                {/* currentQuestion null değilse question_text'e eriş */}
                 <p className="question-text">{currentQuestion.question_text?.replace('___', ' _____ ')}</p>
 
                 {!feedback && (

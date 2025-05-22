@@ -1,19 +1,27 @@
-// frontend/src/pages/RegisterPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useRef  } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../services/api';
+import ReCAPTCHA from "react-google-recaptcha";
 import './RegisterPage.css';
+
+const RECAPTCHA_SITE_KEY ='6LfN8UQrAAAAAP5dLKmNx8_iME6YHxGp5n8tNIDb';
 
 function RegisterPage() {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [firstName, setFirstName] = useState(''); // YENİ: first_name için state
-    const [lastName, setLastName] = useState('');   // YENİ: last_name için state
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
+    const [recaptchaToken, setRecaptchaToken] = useState(null);
     const navigate = useNavigate();
+    const recaptchaRef = useRef();
+
+    const handleRecaptchaChange = (token) => {
+        setRecaptchaToken(token);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,10 +29,15 @@ function RegisterPage() {
         setSuccess('');
         setLoading(true);
 
-        // Parola kontrolleri
+        if (!recaptchaToken) { 
+            setError('Please complete the reCAPTCHA verification.');
+            setLoading(false);
+            return;
+        }
+
         const hasUppercase = /[A-Z]/.test(password);
         const hasLowercase = /[a-z]/.test(password);
-        const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/.test(password); // Özel karakter listesi güncellendi
+        const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/.test(password);
 
         if (password.length < 8) {
             setError('Password must be at least 8 characters long.');
@@ -36,28 +49,26 @@ function RegisterPage() {
             setLoading(false);
             return;
         }
-        // İsim ve soyisim için de basit bir kontrol eklenebilir (opsiyonel)
-        // if (!firstName.trim() || !lastName.trim()) {
-        //     setError('Please enter your first and last name.');
-        //     setLoading(false);
-        //     return;
-        // }
-
+         setLoading(true);
         try {
-            // API'ye gönderilecek veri objesi
             const userData = {
                 username,
                 email,
                 password,
-                first_name: firstName, // first_name gönderiliyor
-                last_name: lastName    // last_name gönderiliyor
+                first_name: firstName,
+                last_name: lastName,
+                recaptchaToken: recaptchaToken,
             };
             await register(userData);
             setSuccess('Registration successful! You will be redirected to login page.');
-            setTimeout(() => navigate('/login'), 2500); // Yönlendirme süresi biraz artırıldı
+            setTimeout(() => navigate('/login'), 2500);
         } catch (err) {
             console.error("Registration failed:", err.response?.data || err.message);
             setError(err.response?.data?.message || 'Registration failed. Please try again.');
+            if (recaptchaRef.current) {
+                recaptchaRef.current.reset();
+            }
+            setRecaptchaToken(null);
         } finally {
             setLoading(false);
         }
@@ -68,29 +79,27 @@ function RegisterPage() {
             <h2>Registeration</h2>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="firstName">First Name</label> {/* YENİ ALAN */}
+                    <label htmlFor="firstName">First Name</label>
                     <input
                         type="text"
                         id="firstName"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        // required // İsteğe bağlı olarak zorunlu yapılabilir
                         placeholder="Enter your first name"
                     />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="lastName">Last Name</label> {/* YENİ ALAN */}
+                    <label htmlFor="lastName">Last Name</label>
                     <input
                         type="text"
                         id="lastName"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        // required // İsteğe bağlı olarak zorunlu yapılabilir
                         placeholder="Enter your last name"
                     />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="username">Username</label> {/* "Name" yerine "Username" daha doğru */}
+                    <label htmlFor="username">Username</label>
                     <input
                         type="text"
                         id="username"
@@ -122,13 +131,33 @@ function RegisterPage() {
                         placeholder="Enter your Password"
                     />
                 </div>
-                <button type="submit" className="submit-button" disabled={loading}> {/* submit-button class'ı eklendi (CSS için) */}
+                {RECAPTCHA_SITE_KEY ? (
+                    <div className="form-group recaptcha-container">
+                        <ReCAPTCHA
+                            ref={recaptchaRef}
+                            sitekey={RECAPTCHA_SITE_KEY}
+                            onChange={handleRecaptchaChange}
+                            onExpired={() => {
+                                console.log("reCAPTCHA expired");
+                                setRecaptchaToken(null);
+                            }}
+                            onError={() => {
+                                console.error("reCAPTCHA error");
+                                setError("reCAPTCHA could not be loaded. Please try again.");
+                                setRecaptchaToken(null);
+                            }}
+                        />
+                    </div>
+                ) : (
+                    <p className="error-message">reCAPTCHA site key is missing. Registration is disabled.</p>
+                )}
+                <button type="submit" className="submit-button" disabled={loading}>
                     {loading ? 'Registering...' : 'CREATE AN ACCOUNT'}
                 </button>
             </form>
 
-            {error && <p className="error-message">{error}</p>} {/* Hata mesajı için class eklendi */}
-            {success && <p className="success-message">{success}</p>} {/* Başarı mesajı için class eklendi */}
+            {error && <p className="error-message">{error}</p>}
+            {success && <p className="success-message">{success}</p>}
 
             <p className="switch-auth-link">
                 Already have an account? <Link to="/login">Login</Link>

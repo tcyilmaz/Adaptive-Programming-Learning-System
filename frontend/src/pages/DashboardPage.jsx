@@ -14,7 +14,6 @@ function DashboardPage() {
       try {
         const token = localStorage.getItem("authToken");
         if (!token) {
-          //if no token, take to Login page
           navigate("/login");
           return;
         }
@@ -24,7 +23,7 @@ function DashboardPage() {
         setLoading(false);
       } catch (err) {
         console.error("Failed to fetch user data:", err);
-        setError("Kullanıcı bilgileri yüklenemedi.");
+        setError("Failed to fetch user data.");
         setLoading(false);
         if (
           err.response &&
@@ -43,7 +42,7 @@ function DashboardPage() {
   if (loading) {
     return (
       <div className="dashboard-container">
-        <p>Yükleniyor...</p>
+        <p>Loading...</p>
       </div>
     );
   }

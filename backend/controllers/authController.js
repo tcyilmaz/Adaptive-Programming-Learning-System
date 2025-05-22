@@ -1,13 +1,12 @@
-// backend/controllers/authController.js
 const db = require("../config/db");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-const PGCRYPTO_KEY = process.env.PGCRYPTO_KEY; // Bu kalsın, getMyProfileController kullanıyor
+const PGCRYPTO_KEY = process.env.PGCRYPTO_KEY;
 
 const registerUser = async (req, res) => {
-  const { username, email, password, first_name, last_name } = req.body; // first_name, last_name alınıyor
+  const { username, email, password, first_name, last_name } = req.body;
 
   if (!username || !email || !password) {
     return res
@@ -15,13 +14,16 @@ const registerUser = async (req, res) => {
       .json({ message: "Please provide username, email, and password" });
   }
 
-  // PGCRYPTO_KEY kontrolü bu test için kalabilir, çünkü getMyProfileController bunu kullanıyor.
-  // Eğer bu test sırasında registerUser'da pgcrypto kullanmayacaksak, bu kontrolü registerUser özelinde atlayabiliriz.
-  // Ama şimdilik kalsın, bir zararı yok.
-  // if (!PGCRYPTO_KEY) {
-  //   console.error('CRITICAL: PGCRYPTO_KEY is not set in environment variables.');
-  //   return res.status(500).json({ message: 'Server configuration error due to missing encryption key.' });
-  // }
+  if (!PGCRYPTO_KEY) {
+    console.error(
+      "CRITICAL: PGCRYPTO_KEY is not set in environment variables."
+    );
+    return res
+      .status(500)
+      .json({
+        message: "Server configuration error due to missing encryption key.",
+      });
+  }
 
   try {
     const userExists = await db.query(
@@ -38,53 +40,91 @@ const registerUser = async (req, res) => {
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    // --- TEST 1: first_name ve last_name'i NULL olarak ekleyen, şifrelemesiz INSERT ---
-    console.log("TEST 1: Attempting insert with first_name and last_name as NULL, no encryption.");
+    const fnToEncrypt =
+      first_name && first_name.trim() !== "" ? first_name.trim() : null;
+    const lnToEncrypt =
+      last_name && last_name.trim() !== "" ? last_name.trim() : null;
+
+    let encryptedFirstName = null;
+    let encryptedLastName = null;
+
+
+    if (fnToEncrypt) {
+      const encryptionResultFn = await db.query(
+        "SELECT pgp_sym_encrypt($1::TEXT, $2::TEXT) AS encrypted_value",
+        [fnToEncrypt, PGCRYPTO_KEY]
+      );
+      if (encryptionResultFn.rows.length > 0) {
+        encryptedFirstName = encryptionResultFn.rows[0].encrypted_value;
+      } else {
+        throw new Error("Encryption failed for first name.");
+      }
+    }
+
+    if (lnToEncrypt) {
+      const encryptionResultLn = await db.query(
+        "SELECT pgp_sym_encrypt($1::TEXT, $2::TEXT) AS encrypted_value",
+        [lnToEncrypt, PGCRYPTO_KEY]
+      );
+      if (encryptionResultLn.rows.length > 0) {
+        encryptedLastName = encryptionResultLn.rows[0].encrypted_value;
+      } else {
+        throw new Error("Encryption failed for last name.");
+      }
+    }
+
+
     const insertQuery = `
         INSERT INTO users (
             username, email, password_hash,
-            first_name, last_name 
+            first_name, last_name  -- Bu sütunlar BYTEA tipinde olmalı
         ) VALUES (
-            $1, $2, $3,
-            NULL, NULL       -- first_name ve last_name'i direkt NULL yapıyoruz
+            $1, $2, $3, $4, $5
         ) RETURNING user_id, email, username;
     `;
 
     const params = [
-        username,       // $1
-        email,          // $2
-        passwordHash,   // $3
-        // first_name veya last_name için parametre yok, sorguda direkt NULL yazdık
+      username, // $1
+      email, // $2
+      passwordHash, // $3
+      encryptedFirstName, // $4
+      encryptedLastName, // $5
     ];
 
-    console.log("TEST 1 - SQL Query:", insertQuery);
-    console.log("TEST 1 - SQL Params:", params);
+    console.log(
+      "Register User (Separate Encryption) - SQL Query:",
+      insertQuery
+    );
+    console.log("Register User (Separate Encryption) - SQL Params:", params);
+    params.forEach((p, i) => {
+      let typeInfo = typeof p;
+      if (Buffer.isBuffer(p)) typeInfo = "Buffer (BYTEA)";
+      console.log(
+        `Param $${i + 1} type: ${typeInfo}, value: ${
+          Buffer.isBuffer(p) ? "<Buffer>" : p
+        }`
+      );
+    });
 
     const newUser = await db.query(insertQuery, params);
-    // --- SON TEST 1 ---
 
     res.status(201).json({
-      message: "User registered successfully (Test 1 - names as NULL)!",
+      message: "User registered successfully!",
       user: newUser.rows[0],
     });
   } catch (error) {
-    console.error("Registration Error (Test 1 - names as NULL):", error);
+    console.error("Registration Error (Separate Encryption):", error);
     res.status(500).json({
-        message: "Server error during registration (Test 1 - names as NULL)",
-        errorDetails: error.message,
-        errorCode: error.code,
-        errorPosition: error.position
+      message: "Server error during registration (Separate Encryption)",
+      errorDetails: error.message,
+      errorCode: error.code,
+      errorPosition: error.position,
     });
   }
 };
 
-// loginUser ve getMyProfileController fonksiyonları olduğu gibi kalacak (önceki tam çalışan halleriyle)
-// ÖNEMLİ: getMyProfileController'ın pgp_sym_decrypt(first_name::BYTEA, ...) kullandığından
-// ve first_name/last_name sütunlarının BYTEA olduğundan emin olmalısınız.
-// Bu testten sonra registerUser'ı şifrelemeli hale geri döndüreceğiz.
 
 const loginUser = async (req, res) => {
-  // ... (Bir önceki mesajdaki tam loginUser kodu) ...
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -95,19 +135,23 @@ const loginUser = async (req, res) => {
 
   try {
     const result = await db.query(
-        'SELECT user_id, username, email, password_hash, points, created_at, updated_at FROM users WHERE email = $1',
-        [email]
+      "SELECT user_id, username, email, password_hash, points, created_at, updated_at FROM users WHERE email = $1",
+      [email]
     );
     const user = result.rows[0];
 
     if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials (user not found)' });
+      return res
+        .status(401)
+        .json({ message: "Invalid credentials (user not found)" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password_hash);
 
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials (password mismatch)' });
+      return res
+        .status(401)
+        .json({ message: "Invalid credentials (password mismatch)" });
     }
 
     const payload = {
@@ -124,16 +168,16 @@ const loginUser = async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES_IN || "1h" },
       (err, token) => {
         if (err) {
-            console.error("JWT Sign Error:", err);
-            return res.status(500).json({ message: 'Error generating token' });
+          console.error("JWT Sign Error:", err);
+          return res.status(500).json({ message: "Error generating token" });
         }
         const userInfoToSend = {
-            user_id: user.user_id,
-            username: user.username,
-            email: user.email,
-            points: user.points,
-            created_at: user.created_at,
-            updated_at: user.updated_at
+          user_id: user.user_id,
+          username: user.username,
+          email: user.email,
+          points: user.points,
+          created_at: user.created_at,
+          updated_at: user.updated_at,
         };
         res.status(200).json({
           message: "Login successful!",
@@ -144,19 +188,32 @@ const loginUser = async (req, res) => {
     );
   } catch (error) {
     console.error("Login Error:", error);
-    res.status(500).json({ message: "Server error during login", errorDetails: error.message });
+    res
+      .status(500)
+      .json({
+        message: "Server error during login",
+        errorDetails: error.message,
+      });
   }
 };
 
 const getMyProfileController = async (req, res) => {
   if (!PGCRYPTO_KEY) {
-    console.error('CRITICAL: PGCRYPTO_KEY is not set in environment variables for profile fetching.');
-    return res.status(500).json({ message: 'Server configuration error due to missing encryption key.' });
+    console.error(
+      "PGCRYPTO_KEY is not set."
+    );
+    return res
+      .status(500)
+      .json({
+        message: "missing encryption key.",
+      });
   }
 
   try {
     if (!req.user || !req.user.id) {
-      return res.status(400).json({ message: 'User ID not found in token (middleware issue)' });
+      return res
+        .status(400)
+        .json({ message: "User ID not found in token" });
     }
 
     const userId = req.user.id;
@@ -180,19 +237,18 @@ const getMyProfileController = async (req, res) => {
       const userProfile = result.rows[0];
       res.json({ user: userProfile });
     } else {
-      res.status(404).json({ message: 'User not found in database' });
+      res.status(404).json({ message: "User not found in database" });
     }
   } catch (error) {
     console.error("Error fetching or decrypting user profile:", error);
     res.status(500).json({
-        message: "Server error while fetching profile",
-        errorDetails: error.message,
-        errorCode: error.code,
-        errorPosition: error.position
+      message: "Server error while fetching profile",
+      errorDetails: error.message,
+      errorCode: error.code,
+      errorPosition: error.position,
     });
   }
 };
-
 
 module.exports = {
   registerUser,
