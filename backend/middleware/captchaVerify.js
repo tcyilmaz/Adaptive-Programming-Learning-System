@@ -4,7 +4,7 @@ require('dotenv').config();
 const RECAPTCHA_V2_SECRET_KEY = process.env.RECAPTCHA_V2_SECRET_KEY;
 
 const verifyRecaptcha = async (req, res, next) => {
-    const recaptchaToken = req.body.recaptchaToken; // Frontend'den bu isimle token bekliyoruz
+    const recaptchaToken = req.body.recaptchaToken;
 
     if (!RECAPTCHA_V2_SECRET_KEY) {
         console.error('CRITICAL: RECAPTCHA_V2_SECRET_KEY is not set.');
@@ -21,10 +21,8 @@ const verifyRecaptcha = async (req, res, next) => {
         const response = await axios.post(verificationURL);
         const { success, score, action, challenge_ts, hostname, "error-codes": errorCodes } = response.data;
 
-        // reCAPTCHA v2 için 'success' alanına bakılır.
-        // 'score' ve 'action' genellikle reCAPTCHA v3 içindir ama response'da gelebilir.
+        
         if (success) {
-            // CAPTCHA başarılı, bir sonraki adıma geç
             console.log('reCAPTCHA verification successful.');
             next();
         } else {
